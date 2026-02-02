@@ -309,7 +309,6 @@
       50% { opacity: 0; }
     }
 
-    /* Scroll-reveal */
     .reveal {
       opacity: 0;
       transform: translateY(28px);
@@ -323,7 +322,6 @@
     .reveal.reveal-delay-2 { transition-delay: 0.2s; }
     .reveal.reveal-delay-3 { transition-delay: 0.3s; }
 
-    /* 3D tilt card */
     .card-tilt {
       transform-style: preserve-3d;
       transition: transform 0.2s ease-out, box-shadow 0.3s ease, border-color 0.25s;
@@ -333,7 +331,6 @@
       transform: scale(1.02) perspective(800px) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
     }
 
-    /* Staggered name letters */
     .name-letters {
       display: inline-block;
     }
@@ -347,7 +344,6 @@
     }
     .name-letters span:nth-child(n) { transition-delay: calc((var(--i, 0) * 0.02s)); }
 
-    /* Custom cursor */
     .cursor-dot {
       position: fixed;
       width: 8px;
@@ -420,7 +416,6 @@
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    // Staggered name letters
     (function () {
       var el = document.getElementById('name-letters');
       if (!el) return;
@@ -434,7 +429,6 @@
       }
     })();
 
-    // Scroll reveal
     (function () {
       var observer = new IntersectionObserver(function (entries) {
         entries.forEach(function (entry) {
@@ -448,7 +442,6 @@
       });
     })();
 
-    // 3D tilt card
     (function () {
       var card = document.getElementById('tilt-card');
       if (!card) return;
@@ -464,8 +457,7 @@
         card.style.setProperty('--tilt-y', '0deg');
       });
     })();
-
-    // Custom cursor
+    
     (function () {
       var dot = document.getElementById('cursor-dot');
       if (!dot) return;
