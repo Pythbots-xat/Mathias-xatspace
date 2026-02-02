@@ -10,7 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     :root {
-      --void: #0a0a0f;
+      --void: #000000;
       --surface: #12121a;
       --border: rgba(0, 255, 136, 0.15);
       --glow: #00ff88;
@@ -37,39 +37,6 @@
       color: var(--text);
       min-height: 100vh;
       overflow-x: hidden;
-    }
-
-    .grid-bg {
-      position: fixed;
-      inset: 0;
-      background-image:
-        linear-gradient(rgba(0, 255, 136, 0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0, 255, 136, 0.03) 1px, transparent 1px);
-      background-size: 60px 60px;
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    .cursor-glow {
-      position: fixed;
-      width: 120vmax;
-      height: 120vmax;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      background: radial-gradient(
-        circle at center,
-        rgba(0, 255, 136, 0.06) 0%,
-        rgba(0, 255, 136, 0.02) 25%,
-        transparent 50%
-      );
-      pointer-events: none;
-      z-index: 0;
-      transition: opacity 0.3s ease;
-    }
-
-    .cursor-glow.inactive {
-      opacity: 0.4;
     }
 
     #particle-canvas {
@@ -220,6 +187,10 @@
       margin-top: 1.5rem;
       transition: border-color 0.25s, box-shadow 0.25s;
     }
+    .card.card-tilt {
+      --tilt-x: 0deg;
+      --tilt-y: 0deg;
+    }
 
     .card:hover {
       border-color: rgba(0, 255, 136, 0.3);
@@ -337,11 +308,75 @@
     @keyframes blink-cursor {
       50% { opacity: 0; }
     }
+
+    /* Scroll-reveal */
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .reveal.revealed {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .reveal.reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal.reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal.reveal-delay-3 { transition-delay: 0.3s; }
+
+    /* 3D tilt card */
+    .card-tilt {
+      transform-style: preserve-3d;
+      transition: transform 0.2s ease-out, box-shadow 0.3s ease, border-color 0.25s;
+      will-change: transform;
+    }
+    .card-tilt:hover {
+      transform: scale(1.02) perspective(800px) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
+    }
+
+    /* Staggered name letters */
+    .name-letters {
+      display: inline-block;
+    }
+    .name-letters span {
+      display: inline-block;
+      transition: transform 0.2s ease, text-shadow 0.2s ease;
+    }
+    .name-letters:hover span {
+      transform: translateY(-2px);
+      text-shadow: 0 0 30px var(--glow-dim);
+    }
+    .name-letters span:nth-child(n) { transition-delay: calc((var(--i, 0) * 0.02s)); }
+
+    /* Custom cursor */
+    .cursor-dot {
+      position: fixed;
+      width: 8px;
+      height: 8px;
+      left: 0;
+      top: 0;
+      border-radius: 50%;
+      background: var(--glow);
+      pointer-events: none;
+      z-index: 9999;
+      mix-blend-mode: screen;
+      box-shadow: 0 0 12px var(--glow);
+      transition: transform 0.15s ease, opacity 0.2s;
+      opacity: 0;
+    }
+    .cursor-dot.ready {
+      opacity: 1;
+    }
+    .cursor-dot.hover {
+      transform: scale(2);
+      opacity: 0.5;
+    }
+    @media (hover: none) {
+      .cursor-dot { display: none; }
+    }
   </style>
 </head>
 <body>
-  <div class="grid-bg" aria-hidden="true"></div>
-  <div class="cursor-glow" id="cursor-glow" aria-hidden="true"></div>
+  <div class="cursor-dot" id="cursor-dot" aria-hidden="true"></div>
   <canvas id="particle-canvas" aria-hidden="true"></canvas>
   <div class="gradient-orb" aria-hidden="true"></div>
   <div class="gradient-orb gradient-orb-2" aria-hidden="true"></div>
@@ -349,28 +384,28 @@
   <div class="wrap">
     <header>
       <p class="tag">Developer</p>
-      <h1>Hi, I'm <span class="highlight">Mathias</span><span class="blink" aria-hidden="true"></span></h1>
+      <h1>Hi, I'm <span class="highlight name-letters" id="name-letters">Mathias</span><span class="blink" aria-hidden="true"></span></h1>
       <p class="subtitle">
         I build websites and bots. Founder of <a href="https://pythbots.com" target="_blank" rel="noopener noreferrer">Pythbots.com</a>
       </p>
     </header>
 
-    <section>
-      <p class="section-label">About</p>
-      <h2>What I do</h2>
-      <p>
+    <section class="reveal" data-reveal>
+      <p class="section-label reveal reveal-delay-1" data-reveal>About</p>
+      <h2 class="reveal reveal-delay-2" data-reveal>What I do</h2>
+      <p class="reveal reveal-delay-3" data-reveal>
         I'm a developer focused on building websites. In 2025 I created Pythbots.com for xat.com.
       </p>
     </section>
 
 
-    <section>
-      <p class="section-label">Project(s)</p>
-      <h2>Pythbots</h2>
-      <p>
+    <section class="reveal" data-reveal>
+      <p class="section-label reveal reveal-delay-1" data-reveal>Project(s)</p>
+      <h2 class="reveal reveal-delay-2" data-reveal>Pythbots</h2>
+      <p class="reveal reveal-delay-3" data-reveal>
         Created in 2025. Idea was to bring affordable, easy to use and advanced bots to xat. We're the first one to add AI Moderation.
       </p>
-      <div class="card">
+      <div class="card card-tilt reveal" id="tilt-card" data-reveal>
         <h3>Pythbots.com</h3>
         <p>Seamless moderation, automation, and engagement.</p>
         <a href="https://pythbots.com" target="_blank" rel="noopener noreferrer">Visit Pythbots</a>
@@ -385,40 +420,73 @@
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
 
+    // Staggered name letters
     (function () {
-      var glow = document.getElementById('cursor-glow');
-      var mouse = { x: 0.5, y: 0.5 };
-      var target = { x: 0.5, y: 0.5 };
-      var raf;
-
-      function lerp(a, b, t) {
-        return a + (b - a) * Math.min(t, 1);
+      var el = document.getElementById('name-letters');
+      if (!el) return;
+      var text = el.textContent;
+      el.textContent = '';
+      for (var i = 0; i < text.length; i++) {
+        var span = document.createElement('span');
+        span.textContent = text[i];
+        span.style.setProperty('--i', i);
+        el.appendChild(span);
       }
+    })();
 
-      function updateGlow() {
-        mouse.x = lerp(mouse.x, target.x, 0.08);
-        mouse.y = lerp(mouse.y, target.y, 0.08);
-        var x = mouse.x * 100;
-        var y = mouse.y * 100;
-        glow.style.background = 'radial-gradient(circle at ' + x + '% ' + y + '%, rgba(0, 255, 136, 0.08) 0%, rgba(0, 255, 136, 0.025) 30%, transparent 55%)';
-        raf = requestAnimationFrame(updateGlow);
+    // Scroll reveal
+    (function () {
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('revealed');
+          }
+        });
+      }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+      document.querySelectorAll('[data-reveal]').forEach(function (el) {
+        observer.observe(el);
+      });
+    })();
+
+    // 3D tilt card
+    (function () {
+      var card = document.getElementById('tilt-card');
+      if (!card) return;
+      card.addEventListener('mousemove', function (e) {
+        var rect = card.getBoundingClientRect();
+        var x = (e.clientX - rect.left) / rect.width - 0.5;
+        var y = (e.clientY - rect.top) / rect.height - 0.5;
+        card.style.setProperty('--tilt-y', (x * 8) + 'deg');
+        card.style.setProperty('--tilt-x', (y * -6) + 'deg');
+      });
+      card.addEventListener('mouseleave', function () {
+        card.style.setProperty('--tilt-x', '0deg');
+        card.style.setProperty('--tilt-y', '0deg');
+      });
+    })();
+
+    // Custom cursor
+    (function () {
+      var dot = document.getElementById('cursor-dot');
+      if (!dot) return;
+      var x = 0, y = 0, tx = 0, ty = 0;
+      document.addEventListener('mousemove', function (e) {
+        tx = e.clientX;
+        ty = e.clientY;
+        dot.classList.add('ready');
+      });
+      document.querySelectorAll('a, .card, .skill').forEach(function (el) {
+        el.addEventListener('mouseenter', function () { dot.classList.add('hover'); });
+        el.addEventListener('mouseleave', function () { dot.classList.remove('hover'); });
+      });
+      function tick() {
+        x += (tx - x) * 0.2;
+        y += (ty - y) * 0.2;
+        dot.style.left = (x - 4) + 'px';
+        dot.style.top = (y - 4) + 'px';
+        requestAnimationFrame(tick);
       }
-
-      function onMove(e) {
-        target.x = e.clientX / window.innerWidth;
-        target.y = e.clientY / window.innerHeight;
-        glow.classList.remove('inactive');
-      }
-
-      function onLeave() {
-        target.x = 0.5;
-        target.y = 0.5;
-        glow.classList.add('inactive');
-      }
-
-      window.addEventListener('mousemove', onMove, { passive: true });
-      window.addEventListener('mouseleave', onLeave);
-      raf = requestAnimationFrame(updateGlow);
+      tick();
     })();
 
     (function () {
